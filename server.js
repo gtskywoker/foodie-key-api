@@ -10,19 +10,29 @@ app.use(express.json()); // สำหรับ Parse JSON Request Body
 
 // API Endpoint สำหรับดึง Cloudinary Keys
 app.get('/cloudinary-keys', (req, res) => {
+    const requestStartTime = Date.now();
+    const requestTimestamp = new Date().toISOString();
+    console.log(`[${requestTimestamp}] Request received for /cloudinary-keys`);
+
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
     const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET; // ดึงค่า uploadPreset
 
     if (cloudName && apiKey && apiSecret && uploadPreset) {
-        res.json({ 
-            cloud_name: cloudName, 
-            api_key: apiKey, 
-            api_secret: apiSecret, 
+        const responseData = {
+            cloud_name: cloudName,
+            api_key: apiKey,
+            api_secret: apiSecret,
             uploadPreset: uploadPreset // ส่งค่า uploadPreset กลับไปด้วย
-        });
+        };
+        const responseTime = Date.now() - requestStartTime;
+        const responseTimestamp = new Date().toISOString();
+        console.log(`[${responseTimestamp}] Response sent for /cloudinary-keys in ${responseTime}ms`);
+        res.json(responseData);
     } else {
+        const errorTimestamp = new Date().toISOString();
+        console.error(`[${errorTimestamp}] Cloudinary keys not configured in environment variables`);
         res.status(500).json({ error: 'Cloudinary keys not configured in environment variables' });
     }
 });
